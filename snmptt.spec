@@ -1,12 +1,13 @@
 # TODO:
-# - logfiles (directories?)
+# - spooldir for daemon mode: /var/spool/snmptt/
+# - logrotate file
 # 
 %include	/usr/lib/rpm/macros.perl
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP
 Summary(pl):	Program do obs³ugi pu³apek SNMP do u¿ywania z NET-SNMP/UCD-SNMP
 Name:		snmptt
 Version:	0.9
-Release:	0.4
+Release:	0.5
 License:	GPL v2
 Group:		Networking
 Source0:	http://dl.sourceforge.net/snmptt/%{name}_%{version}.tgz
@@ -48,13 +49,15 @@ Skrypt init dla SNMPTT.
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_sbindir},%{_sysconfdir}/snmp,/etc/rc.d/init.d}
+install -d $RPM_BUILD_ROOT{%{_sbindir},%{_sysconfdir}/snmp,/etc/rc.d/init.d,/var/log}
 
 install snmptt $RPM_BUILD_ROOT%{_sbindir}
 install snmptthandler $RPM_BUILD_ROOT%{_sbindir}
 install snmptt.ini $RPM_BUILD_ROOT%{_sysconfdir}/snmp
 install examples/snmptt.conf.generic $RPM_BUILD_ROOT%{_sysconfdir}/snmp/snmptt.conf
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
+
+touch $RPM_BUILD_ROOT/var/log/{snmptt.log,snmpttunknown.log}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -81,6 +84,7 @@ fi
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.ini
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.conf
 %attr(755,root,root) %{_sbindir}/snmptt
+%config(noreplace) %verify(not size mtime md5) /var/log/*.log
 
 %files init
 %defattr(644,root,root,755)
