@@ -3,6 +3,7 @@
 # 
 %include	/usr/lib/rpm/macros.perl
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP
+Summary(pl):	Program do obs³ugi pu³apek SNMP do u¿ywania z NET-SNMP/UCD-SNMP
 Name:		snmptt
 Version:	0.9
 Release:	0.4
@@ -22,24 +23,36 @@ STDOUT, text log file, syslog, NT Event Log, MySQL (Linux/Windows),
 PostgreSQL, or an ODBC database. User defined programs can also be
 executed.
 
+%description -l pl
+SNMPTT to program obs³uguj±cy pu³apki SNMP napisany w Perlu, do
+u¿ywania z programem snmptrapd z pakietu NET-SNMP/UCD-SNMP. Otrzymane
+pu³apki s± t³umaczone na przyjazne komunikaty przez podstawienia
+zmiennych. Wyj¶ciem mo¿e byæ STDOUT, plik loga tekstowego, syslog,
+Event Log NT, MySQL (Linux/Windows), PostgreSQL albo baza danych ODBC.
+Mo¿na tak¿e wywo³ywaæ zdefiniowane przez u¿ytkownika programy.
+
 %package init
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP - daemon script
+Summary(pl):	Program do obs³ugi pu³apek SNMP do u¿ywania z NET-SNMP/UCD-SNMP - skrypt demona
 Group:		Networking/Daemons
 Requires:	%{name} = %{version}-%{release}
 
 %description init
 Init scripts for SNMPTT.
 
+%description init -l pl
+Skrypt init dla SNMPTT.
+
 %prep
 %setup -q -n %{name}_%{version}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_sbindir},%{_sysconfdir}/{snmp,rc.d/init.d}}
+install -d $RPM_BUILD_ROOT{%{_sbindir},%{_sysconfdir}/snmp,/etc/rc.d/init.d}
 
 install snmptt $RPM_BUILD_ROOT%{_sbindir}
 install snmptthandler $RPM_BUILD_ROOT%{_sbindir}
-install snmptt.ini $RPM_BUILD_ROOT%{_sysconfdir}/snmp/
+install snmptt.ini $RPM_BUILD_ROOT%{_sysconfdir}/snmp
 install examples/snmptt.conf.generic $RPM_BUILD_ROOT%{_sysconfdir}/snmp/snmptt.conf
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 
@@ -65,11 +78,11 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc BUGS ChangeLog README examples docs
-%attr(644,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.ini
-%attr(644,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.conf
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.ini
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.conf
 %attr(755,root,root) %{_sbindir}/snmptt
 
 %files init
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_sbindir}/snmptthandler
-%attr(755,root,root) /etc/rc.d/init.d/%{name}
+%attr(754,root,root) /etc/rc.d/init.d/%{name}
