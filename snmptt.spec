@@ -57,7 +57,7 @@ install snmptt.ini $RPM_BUILD_ROOT%{_sysconfdir}/snmp
 install examples/snmptt.conf.generic $RPM_BUILD_ROOT%{_sysconfdir}/snmp/snmptt.conf
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 
-touch $RPM_BUILD_ROOT/var/log/{snmptt.log,snmpttunknown.log}
+touch $RPM_BUILD_ROOT/var/log/{snmptt.{log,debug},snmpttunknown.log}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -85,6 +85,7 @@ fi
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.conf
 %attr(755,root,root) %{_sbindir}/snmptt
 %config(noreplace) %verify(not size mtime md5) /var/log/*.log
+%config(noreplace) %verify(not size mtime md5) /var/log/*.debug
 
 %files init
 %defattr(644,root,root,755)
