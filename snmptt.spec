@@ -65,8 +65,8 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc BUGS ChangeLog README examples docs
-%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.ini
-%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.conf
+%attr(644,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.ini
+%attr(644,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.conf
 %attr(755,root,root) %{_sbindir}/snmptt
 
 %files init
