@@ -7,7 +7,7 @@ Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP
 Summary(pl):	Program do obs³ugi pu³apek SNMP do u¿ywania z NET-SNMP/UCD-SNMP
 Name:		snmptt
 Version:	0.9
-Release:	0.9
+Release:	1
 License:	GPL v2
 Group:		Networking
 Source0:	http://dl.sourceforge.net/snmptt/%{name}_%{version}.tgz
