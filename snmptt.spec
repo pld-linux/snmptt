@@ -1,8 +1,11 @@
+# TODO:
+# - logfiles (directories?)
+# 
 %include	/usr/lib/rpm/macros.perl
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP
 Name:		snmptt
 Version:	0.9
-Release:	0.3
+Release:	0.4
 License:	GPL v2
 Group:		Networking
 Source0:	http://dl.sourceforge.net/snmptt/%{name}_%{version}.tgz
@@ -36,7 +39,8 @@ install -d $RPM_BUILD_ROOT{%{_sbindir},%{_sysconfdir}/{snmp,rc.d/init.d}}
 
 install snmptt $RPM_BUILD_ROOT%{_sbindir}
 install snmptthandler $RPM_BUILD_ROOT%{_sbindir}
-install snmptt.ini $RPM_BUILD_ROOT%{_sysconfdir}/snmp/snmptt.conf
+install snmptt.ini $RPM_BUILD_ROOT%{_sysconfdir}/snmp/
+install examples/snmptt.conf.generic $RPM_BUILD_ROOT%{_sysconfdir}/snmp/snmptt.conf
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 
 %clean
@@ -61,6 +65,7 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc BUGS ChangeLog README examples docs
+%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.ini
 %attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.conf
 %attr(755,root,root) %{_sbindir}/snmptt
 
