@@ -36,6 +36,8 @@ Mo¿na tak¿e wywo³ywaæ zdefiniowane przez u¿ytkownika programy.
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP - daemon script
 Summary(pl):	Program do obs³ugi pu³apek SNMP do u¿ywania z NET-SNMP/UCD-SNMP - skrypt demona
 Group:		Networking/Daemons
+PreReq:		rc-scripts
+Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name} = %{version}-%{release}
 
 %description init
