@@ -1,11 +1,8 @@
-# TODO:
-# - chkconfig in pre/post
-# - separate package with init script and handler
 %include	/usr/lib/rpm/macros.perl
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP
 Name:		snmptt
 Version:	0.9
-Release:	0.1
+Release:	0.2
 License:	GPL v2
 Group:		Networking
 Source0:	http://dl.sourceforge.net/snmptt/%{name}_%{version}.tgz
@@ -22,6 +19,14 @@ STDOUT, text log file, syslog, NT Event Log, MySQL (Linux/Windows),
 PostgreSQL, or an ODBC database. User defined programs can also be
 executed.
 
+%package init
+Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP - daemon script
+Group:		Networking/Daemons
+Requires:	%{name} = %{version}-%{release}
+
+%description init
+Init scripts for SNMPTT.
+
 %prep
 %setup -q -n %{name}_%{version}
 
@@ -37,9 +42,29 @@ install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post init
+/sbin/chkconfig --add %{name}
+if [ -f /var/lock/subsys/%{name} ]; then
+	/etc/rc.d/init.d/%{name} restart
+else
+	echo "Run \"/etc/rc.d/init.d/%{name} start\" to start %{name} service."
+fi
+
+%preun init
+if [ "$1" = "0" ]; then
+	if [ -f /var/lock/subsys/%{name} ]; then
+		/etc/rc.d/init.d/%{name} stop
+	fi
+	/sbin/chkconfig --del
+fi
+
 %files
 %defattr(644,root,root,755)
 %doc BUGS ChangeLog README examples docs
 %attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.ini
-%attr(755,root,root) %{_sbindir}/*
+%attr(755,root,root) %{_sbindir}/snmptt
+
+%files init
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_sbindir}/snmptthandler
 %attr(755,root,root) /etc/rc.d/init.d/%{name}
