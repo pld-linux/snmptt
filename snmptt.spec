@@ -14,6 +14,7 @@ Source0:	http://dl.sourceforge.net/snmptt/%{name}_%{version}.tgz
 # Source0-md5:	ad93fc3d7b28eb59c153ce2761644838
 Source1:	%{name}.init
 URL:		http://www.snmptt.org/
+BuildRequires:	rpm-perlprov
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
