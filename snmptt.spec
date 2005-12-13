@@ -1,7 +1,7 @@
 # TODO:
 # - spooldir for daemon mode: /var/spool/snmptt/
 # - logrotate file
-# 
+#
 %include	/usr/lib/rpm/macros.perl
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP
 Summary(pl):	Program do obs³ugi pu³apek SNMP do u¿ywania z NET-SNMP/UCD-SNMP
@@ -37,9 +37,9 @@ Mo¿na tak¿e wywo³ywaæ zdefiniowane przez u¿ytkownika programy.
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP - daemon script
 Summary(pl):	Program do obs³ugi pu³apek SNMP do u¿ywania z NET-SNMP/UCD-SNMP - skrypt demona
 Group:		Networking/Daemons
-PreReq:		rc-scripts
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name} = %{version}-%{release}
+Requires:	rc-scripts
 
 %description init
 Init scripts for SNMPTT.
@@ -84,11 +84,11 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc BUGS ChangeLog README examples docs
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.ini
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/snmp/snmptt.conf
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/snmp/snmptt.ini
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/snmp/snmptt.conf
 %attr(755,root,root) %{_sbindir}/snmptt
-%config(noreplace) %verify(not size mtime md5) /var/log/*.log
-%config(noreplace) %verify(not size mtime md5) /var/log/*.debug
+%config(noreplace) %verify(not md5 mtime size) /var/log/*.log
+%config(noreplace) %verify(not md5 mtime size) /var/log/*.debug
 
 %files init
 %defattr(644,root,root,755)
