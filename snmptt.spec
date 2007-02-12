@@ -4,7 +4,7 @@
 #
 %include	/usr/lib/rpm/macros.perl
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP
-Summary(pl):	Program do obs≥ugi pu≥apek SNMP do uøywania z NET-SNMP/UCD-SNMP
+Summary(pl.UTF-8):   Program do obs≈Çugi pu≈Çapek SNMP do u≈ºywania z NET-SNMP/UCD-SNMP
 Name:		snmptt
 Version:	1.0
 Release:	1
@@ -25,17 +25,17 @@ STDOUT, text log file, syslog, NT Event Log, MySQL (Linux/Windows),
 PostgreSQL, or an ODBC database. User defined programs can also be
 executed.
 
-%description -l pl
-SNMPTT to program obs≥uguj±cy pu≥apki SNMP napisany w Perlu, do
-uøywania z programem snmptrapd z pakietu NET-SNMP/UCD-SNMP. Otrzymane
-pu≥apki s± t≥umaczone na przyjazne komunikaty przez podstawienia
-zmiennych. Wyj∂ciem moøe byÊ STDOUT, plik loga tekstowego, syslog,
+%description -l pl.UTF-8
+SNMPTT to program obs≈ÇugujƒÖcy pu≈Çapki SNMP napisany w Perlu, do
+u≈ºywania z programem snmptrapd z pakietu NET-SNMP/UCD-SNMP. Otrzymane
+pu≈Çapki sƒÖ t≈Çumaczone na przyjazne komunikaty przez podstawienia
+zmiennych. Wyj≈õciem mo≈ºe byƒá STDOUT, plik loga tekstowego, syslog,
 Event Log NT, MySQL (Linux/Windows), PostgreSQL albo baza danych ODBC.
-Moøna takøe wywo≥ywaÊ zdefiniowane przez uøytkownika programy.
+Mo≈ºna tak≈ºe wywo≈Çywaƒá zdefiniowane przez u≈ºytkownika programy.
 
 %package init
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP - daemon script
-Summary(pl):	Program do obs≥ugi pu≥apek SNMP do uøywania z NET-SNMP/UCD-SNMP - skrypt demona
+Summary(pl.UTF-8):   Program do obs≈Çugi pu≈Çapek SNMP do u≈ºywania z NET-SNMP/UCD-SNMP - skrypt demona
 Group:		Networking/Daemons
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name} = %{version}-%{release}
@@ -44,7 +44,7 @@ Requires:	rc-scripts
 %description init
 Init scripts for SNMPTT.
 
-%description init -l pl
+%description init -l pl.UTF-8
 Skrypt init dla SNMPTT.
 
 %prep
