@@ -4,7 +4,7 @@
 #
 %include	/usr/lib/rpm/macros.perl
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP
-Summary(pl.UTF-8):   Program do obsługi pułapek SNMP do używania z NET-SNMP/UCD-SNMP
+Summary(pl.UTF-8):	Program do obsługi pułapek SNMP do używania z NET-SNMP/UCD-SNMP
 Name:		snmptt
 Version:	1.0
 Release:	1
@@ -35,7 +35,7 @@ Można także wywoływać zdefiniowane przez użytkownika programy.
 
 %package init
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP - daemon script
-Summary(pl.UTF-8):   Program do obsługi pułapek SNMP do używania z NET-SNMP/UCD-SNMP - skrypt demona
+Summary(pl.UTF-8):	Program do obsługi pułapek SNMP do używania z NET-SNMP/UCD-SNMP - skrypt demona
 Group:		Networking/Daemons
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name} = %{version}-%{release}
