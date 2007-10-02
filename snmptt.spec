@@ -7,13 +7,14 @@ Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP
 Summary(pl.UTF-8):	Program do obsługi pułapek SNMP do używania z NET-SNMP/UCD-SNMP
 Name:		snmptt
 Version:	1.0
-Release:	1
+Release:	2
 License:	GPL v2
 Group:		Networking
 Source0:	http://dl.sourceforge.net/snmptt/%{name}_%{version}.tgz
 # Source0-md5:	ad93fc3d7b28eb59c153ce2761644838
 Source1:	%{name}.init
 URL:		http://www.snmptt.org/
+BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	rpm-perlprov
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -67,18 +68,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %post init
 /sbin/chkconfig --add %{name}
-if [ -f /var/lock/subsys/%{name} ]; then
-	/etc/rc.d/init.d/%{name} restart
-else
-	echo "Run \"/etc/rc.d/init.d/%{name} start\" to start %{name} service."
-fi
+%service snmptt restart
 
 %preun init
 if [ "$1" = "0" ]; then
-	if [ -f /var/lock/subsys/%{name} ]; then
-		/etc/rc.d/init.d/%{name} stop
-	fi
-	/sbin/chkconfig --del
+	%service snmptt stop
+	/sbin/chkconfig --del snmptt
 fi
 
 %files
