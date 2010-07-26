@@ -6,12 +6,12 @@
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP
 Summary(pl.UTF-8):	Program do obsługi pułapek SNMP do używania z NET-SNMP/UCD-SNMP
 Name:		snmptt
-Version:	1.2
+Version:	1.3
 Release:	1
 License:	GPL v2
 Group:		Networking
 Source0:	http://dl.sourceforge.net/snmptt/%{name}_%{version}.tgz
-# Source0-md5:	5200502b7058c9e2cbe3816bf0fe27d0
+# Source0-md5:	ee8d8206d3e0d860fee126e09d8eb207
 Source1:	%{name}.init
 URL:		http://www.snmptt.org/
 BuildRequires:	rpmbuild(macros) >= 1.268
