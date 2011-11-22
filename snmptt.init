@@ -1,48 +1,50 @@
-#!/bin/bash
-# init file for snmptt
-# Alex Burger - 8/29/02
-# 	      - 9/8/03 - Added snmptt.pid support to Stop function
-#
-# chkconfig: - 50 50
-# description: Simple Network Management Protocol (SNMP) Daemon
-#
+#!/bin/sh
+# snmptt	SNMP translator
+# chkconfig:	345 50 50
+
 # processname: /usr/sbin/snmptt
 # pidfile: /var/run/snmptt.pid
 
-# source function library
-. /etc/init.d/functions
+# Source function library
+. /etc/rc.d/init.d/functions
 
-OPTIONS="--daemon"
-RETVAL=0
-prog="snmptt"
+SNMPTT_OPTIONS="--daemon"
 
 start() {
-	echo -n $"Starting $prog: "
-        daemon /usr/sbin/snmptt $OPTIONS
+	# Check if the service is already running?
+	if [ -f /var/lock/subsys/snmptt ]; then
+		msg_already_running "snmptt"
+		return
+	fi
+
+	msg_starting "snmptt"
+        daemon /usr/sbin/snmptt $SNMPTT_OPTIONS
 	RETVAL=$?
-	echo
-	touch /var/lock/subsys/snmptt
-	return $RETVAL
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/snmptt
 }
 
 stop() {
-	echo -n $"Stopping $prog: "
-	killproc /usr/sbin/snmptt 2>/dev/null
-	RETVAL=$?
-	echo
-	rm -f /var/lock/subsys/snmptt
-	if test -f /var/run/snmptt.pid ; then
-	  [ $RETVAL -eq 0 ] && rm -f /var/run/snmptt.pid
+	if [ ! -f /var/lock/subsys/snmptt ]; then
+		msg_not_running "snmptt"
+		return
 	fi
-	return $RETVAL
+
+	msg_stopping "snmptt"
+	killproc snmptt
+	RETVAL=$?
+	rm -f /var/lock/subsys/snmptt /var/run/snmptt.pid >/dev/null 2>&1
 }
 
 reload(){
-        echo -n $"Reloading config file: "
-        killproc snmptt -HUP
-        RETVAL=$?
-        echo
-        return $RETVAL
+	if [ ! -f /var/lock/subsys/snmptt ]; then
+		msg_not_running "snmptt"
+		RETVAL=7
+		return
+	fi
+
+	msg_reloading "snmptt"
+	killproc snmptt -HUP
+	RETVAL=$?
 }
 
 restart(){
