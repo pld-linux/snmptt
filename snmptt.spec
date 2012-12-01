@@ -18,6 +18,16 @@ Patch1:		%{name}-unlink.patch
 URL:		http://www.snmptt.org/
 BuildRequires:	rpmbuild(macros) >= 1.644
 BuildRequires:	rpm-perlprov
+Provides:	user(snmptt)
+Provides:	group(snmptt)
+Requires(postun):	/usr/sbin/groupdel
+Requires(postun):	/usr/sbin/userdel
+Requires(pre):	/usr/lib/rpm/user_group.sh
+Requires(pre):	/usr/sbin/usermod
+Requires(pre):  /bin/id
+Requires(pre):  /usr/bin/getgid
+Requires(pre):  /usr/sbin/groupadd
+Requires(pre):  /usr/sbin/useradd
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -40,18 +50,7 @@ Można także wywoływać zdefiniowane przez użytkownika programy.
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP - daemon script
 Summary(pl.UTF-8):	Program do obsługi pułapek SNMP do używania z NET-SNMP/UCD-SNMP - skrypt demona
 Group:		Networking/Daemons
-Provides:	user(snmptt)
-Provides:	group(snmptt)
 Requires(post,preun):	/sbin/chkconfig
-Requires(postun):	/usr/sbin/groupdel
-Requires(postun):	/usr/sbin/userdel
-Requires(pre):  /bin/id
-Requires(pre):  /usr/sbin/useradd
-Requires(pre):  /usr/bin/getgid
-Requires(pre):  /usr/sbin/groupadd
-Requires(pre):	/usr/lib/rpm/user_group.sh
-Requires(pre):	/bin/id
-Requires(pre):	/usr/sbin/usermod
 Requires:	%{name} = %{version}-%{release}
 Requires:	rc-scripts
 Requires:	systemd-units >= 38
@@ -71,7 +70,7 @@ Pliki i zależności potrzebne do używania SNMPTT jako demona.
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sbindir},%{_sysconfdir}/snmp} \
-	$RPM_BUILD_ROOT{/etc/rc.d/init.d,/var/log,/var/spool/snmptt} \
+	$RPM_BUILD_ROOT{/etc/rc.d/init.d,/var/log/%{name},/var/spool/%{name}} \
 	$RPM_BUILD_ROOT%{systemdunitdir}
 
 install snmptt $RPM_BUILD_ROOT%{_sbindir}
@@ -83,14 +82,30 @@ install examples/snmptt.conf.generic $RPM_BUILD_ROOT%{_sysconfdir}/snmp/snmptt.c
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE2} $RPM_BUILD_ROOT%{systemdunitdir}
 
-touch $RPM_BUILD_ROOT/var/log/{snmptt.{log,debug},snmpttunknown.log}
+touch $RPM_BUILD_ROOT/var/log/%{name}/snmptt{,unknown,system}.log
+touch $RPM_BUILD_ROOT/var/log/%{name}/snmptt{,handler}.debug
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%pre daemon
+%pre
 %groupadd -g 285 snmptt
 %useradd -u 285 -c 'SNMPTT' -g snmptt snmptt
+
+%post
+for log in snmptt{,unknown,system}.log snmptt{,handler}.debug; do
+        if [ ! -f /var/log/%{name}/$log ]; then
+                touch /var/log/%{name}/$log || :
+                chown snmptt:snmptt /var/log/%{name}/$log || :
+                chmod 640 /var/log/%{name}/$log || :
+        fi
+done
+
+%postun
+if [ "$1" = "0" ]; then
+	%userremove snmptt
+	%groupremove snmptt
+fi
 
 %post daemon
 /sbin/chkconfig --add %{name}
@@ -105,13 +120,9 @@ fi
 %systemd_preun %{name}.service
 
 %postun daemon
-if [ "$1" = "0" ]; then
-	%userremove snmptt
-	%groupremove snmptt
-fi
 %systemd_reload
 
-%triggerin daemon -- nagios
+%triggerin -- nagios
 # so SNMPTT can be used to post nagios commands
 %addusertogroup -q snmptt nagcmd
 
@@ -123,8 +134,9 @@ fi
 %attr(755,root,root) %{_sbindir}/snmptt
 %attr(755,root,root) %{_sbindir}/snmpttconvert
 %attr(755,root,root) %{_sbindir}/snmpttconvertmib
-%config(noreplace) %verify(not md5 mtime size) /var/log/*.log
-%config(noreplace) %verify(not md5 mtime size) /var/log/*.debug
+%dir %attr(771,root,snmptt) /var/log/snmptt
+%ghost %attr(640,snmptt,snmptt) /var/log/snmptt/*.log
+%ghost %attr(640,snmptt,snmptt) /var/log/snmptt/*.debug
 
 %files daemon
 %defattr(644,root,root,755)
