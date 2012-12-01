@@ -13,6 +13,7 @@ Source0:	http://dl.sourceforge.net/snmptt/%{name}_%{version}.tgz
 # Source0-md5:	ee8d8206d3e0d860fee126e09d8eb207
 Source1:	%{name}.init
 Source2:	%{name}.service
+Source3:	%{name}.logrotate
 Patch0:		%{name}-privileges.patch
 Patch1:		%{name}-unlink.patch
 URL:		http://www.snmptt.org/
@@ -70,8 +71,8 @@ Pliki i zależności potrzebne do używania SNMPTT jako demona.
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sbindir},%{_sysconfdir}/snmp} \
-	$RPM_BUILD_ROOT{/etc/rc.d/init.d,/var/log/%{name},/var/spool/%{name}} \
-	$RPM_BUILD_ROOT%{systemdunitdir}
+	$RPM_BUILD_ROOT{/etc/rc.d/init.d,/var/log{,/archive}/%{name}} \
+	$RPM_BUILD_ROOT{/var/spool/%{name},%{systemdunitdir},/etc/logrotate.d}
 
 install snmptt $RPM_BUILD_ROOT%{_sbindir}
 install snmpttconvert $RPM_BUILD_ROOT%{_sbindir}
@@ -81,6 +82,7 @@ install snmptt.ini $RPM_BUILD_ROOT%{_sysconfdir}/snmp
 install examples/snmptt.conf.generic $RPM_BUILD_ROOT%{_sysconfdir}/snmp/snmptt.conf
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE2} $RPM_BUILD_ROOT%{systemdunitdir}
+install %{SOURCE3} $RPM_BUILD_ROOT/etc/logrotate.d/%{name}
 
 touch $RPM_BUILD_ROOT/var/log/%{name}/snmptt{,unknown,system}.log
 touch $RPM_BUILD_ROOT/var/log/%{name}/snmptt{,handler}.debug
@@ -135,8 +137,10 @@ fi
 %attr(755,root,root) %{_sbindir}/snmpttconvert
 %attr(755,root,root) %{_sbindir}/snmpttconvertmib
 %dir %attr(771,root,snmptt) /var/log/snmptt
+%dir %attr(771,root,snmptt) /var/log/archive/snmptt
 %ghost %attr(640,snmptt,snmptt) /var/log/snmptt/*.log
 %ghost %attr(640,snmptt,snmptt) /var/log/snmptt/*.debug
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/logrotate.d/%{name}
 
 %files daemon
 %defattr(644,root,root,755)

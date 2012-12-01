@@ -1,0 +1,13 @@
+/var/log/snmptt/*.log
+/var/log/snmptt/*.debug
+{
+	olddir /var/log/archive/snmptt
+
+	su snmptt snmptt
+	create 640 snmptt snmptt
+	missingok
+
+	postrotate
+		/sbin/service snmptt reload > /dev/null
+	endscript
+}
