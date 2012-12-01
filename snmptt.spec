@@ -14,6 +14,7 @@ Source0:	http://dl.sourceforge.net/snmptt/%{name}_%{version}.tgz
 Source1:	%{name}.init
 Source2:	%{name}.service
 Patch0:		%{name}-privileges.patch
+Patch1:		%{name}-unlink.patch
 URL:		http://www.snmptt.org/
 BuildRequires:	rpmbuild(macros) >= 1.644
 BuildRequires:	rpm-perlprov
@@ -65,6 +66,7 @@ Pliki i zależności potrzebne do używania SNMPTT jako demona.
 %prep
 %setup -q -n %{name}_%{version}
 %patch0 -p1
+%patch1 -p1
 
 %install
 rm -rf $RPM_BUILD_ROOT
