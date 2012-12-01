@@ -38,7 +38,18 @@ Można także wywoływać zdefiniowane przez użytkownika programy.
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP - daemon script
 Summary(pl.UTF-8):	Program do obsługi pułapek SNMP do używania z NET-SNMP/UCD-SNMP - skrypt demona
 Group:		Networking/Daemons
+Provides:	user(snmptt)
+Provides:	group(snmptt)
 Requires(post,preun):	/sbin/chkconfig
+Requires(postun):	/usr/sbin/groupdel
+Requires(postun):	/usr/sbin/userdel
+Requires(pre):  /bin/id
+Requires(pre):  /usr/sbin/useradd
+Requires(pre):  /usr/bin/getgid
+Requires(pre):  /usr/sbin/groupadd
+Requires(pre):	/usr/lib/rpm/user_group.sh
+Requires(pre):	/bin/id
+Requires(pre):	/usr/sbin/usermod
 Requires:	%{name} = %{version}-%{release}
 Requires:	rc-scripts
 
@@ -53,7 +64,8 @@ Skrypt init dla SNMPTT.
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_sbindir},%{_sysconfdir}/snmp,/etc/rc.d/init.d,/var/log}
+install -d $RPM_BUILD_ROOT{%{_sbindir},%{_sysconfdir}/snmp} \
+	$RPM_BUILD_ROOT{/etc/rc.d/init.d,/var/log,/var/spool/snmptt}
 
 install snmptt $RPM_BUILD_ROOT%{_sbindir}
 install snmptthandler $RPM_BUILD_ROOT%{_sbindir}
@@ -66,6 +78,10 @@ touch $RPM_BUILD_ROOT/var/log/{snmptt.{log,debug},snmpttunknown.log}
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%pre init
+%groupadd -g 285 snmptt
+%useradd -u 285 -c 'SNMPTT' -g snmptt snmptt
+
 %post init
 /sbin/chkconfig --add %{name}
 %service snmptt restart
@@ -75,6 +91,16 @@ if [ "$1" = "0" ]; then
 	%service snmptt stop
 	/sbin/chkconfig --del snmptt
 fi
+
+%postun init
+if [ "$1" = "0" ]; then
+	%userremove snmptt
+	%groupremove snmptt
+fi
+
+%triggerin init -- nagios
+# so SNMPTT can be used to post nagios commands
+%addusertogroup -q snmptt nagcmd
 
 %files
 %defattr(644,root,root,755)
