@@ -72,6 +72,8 @@ install -d $RPM_BUILD_ROOT{%{_sbindir},%{_sysconfdir}/snmp} \
 	$RPM_BUILD_ROOT%{systemdunitdir}
 
 install snmptt $RPM_BUILD_ROOT%{_sbindir}
+install snmpttconvert $RPM_BUILD_ROOT%{_sbindir}
+install snmpttconvertmib $RPM_BUILD_ROOT%{_sbindir}
 install snmptthandler $RPM_BUILD_ROOT%{_sbindir}
 install snmptt.ini $RPM_BUILD_ROOT%{_sysconfdir}/snmp
 install examples/snmptt.conf.generic $RPM_BUILD_ROOT%{_sysconfdir}/snmp/snmptt.conf
@@ -116,6 +118,8 @@ fi
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/snmp/snmptt.ini
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/snmp/snmptt.conf
 %attr(755,root,root) %{_sbindir}/snmptt
+%attr(755,root,root) %{_sbindir}/snmpttconvert
+%attr(755,root,root) %{_sbindir}/snmpttconvertmib
 %config(noreplace) %verify(not md5 mtime size) /var/log/*.log
 %config(noreplace) %verify(not md5 mtime size) /var/log/*.debug
 
