@@ -1,5 +1,4 @@
 # TODO:
-# - spooldir for daemon mode: /var/spool/snmptt/
 # - logrotate file
 #
 %include	/usr/lib/rpm/macros.perl
@@ -115,3 +114,4 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_sbindir}/snmptthandler
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
+%attr(771,root,snmptt) /var/spool/snmptt
