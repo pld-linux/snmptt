@@ -1,6 +1,7 @@
 #!/bin/sh
 # snmptt	SNMP translator
 # chkconfig:	345 50 50
+# description:	SNMP translator
 
 # processname: /usr/sbin/snmptt
 # pidfile: /var/run/snmptt.pid
