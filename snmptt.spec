@@ -13,6 +13,7 @@ Source0:	http://dl.sourceforge.net/snmptt/%{name}_%{version}.tgz
 # Source0-md5:	ee8d8206d3e0d860fee126e09d8eb207
 Source1:	%{name}.init
 Source2:	%{name}.service
+Patch0:		%{name}-privileges.patch
 URL:		http://www.snmptt.org/
 BuildRequires:	rpmbuild(macros) >= 1.644
 BuildRequires:	rpm-perlprov
@@ -62,6 +63,7 @@ Skrypt init dla SNMPTT.
 
 %prep
 %setup -q -n %{name}_%{version}
+%patch0 -p1
 
 %install
 rm -rf $RPM_BUILD_ROOT

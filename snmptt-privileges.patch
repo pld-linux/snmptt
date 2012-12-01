@@ -1,0 +1,116 @@
+diff -dur snmptt_1.3.orig/snmptt snmptt_1.3/snmptt
+--- snmptt_1.3.orig/snmptt	2009-11-15 14:31:40.000000000 +0100
++++ snmptt_1.3/snmptt	2012-12-01 15:11:09.906454416 +0100
+@@ -197,6 +197,8 @@
+ # DaemonMode
+ my $daemon_fork;
+ my $daemon_uid;
++my $daemon_uid_name;
++my $daemon_gid;
+ my $pid_file;
+ my $spool_directory;
+ my $sleep;
+@@ -801,15 +803,13 @@
+   # Change user if not Windows, and daemon_uid ini parameter not blank
+   if ($^O ne "MSWin32" && $daemon_uid ne '')
+   {
+-    my $daemon_uid_name = '';
+-
+     if ($daemon_uid =~ /\D/)
+     {
+       # no numbers found, so assume it's a textual name
+ 
+       $daemon_uid_name = $daemon_uid;
+ 
+-      $daemon_uid = getpwnam($daemon_uid_name);
++      ($daemon_uid, $daemon_gid) = (getpwnam($daemon_uid_name))[2,3];
+       if (!defined($daemon_uid))
+       {        
+         warn("Could not convert user id \'$daemon_uid_name\' to a numeric UID\n");
+@@ -822,39 +822,42 @@
+         }
+       }
+     }
++    else {
++      ($daemon_uid_name, $daemon_gid) = (getpwuid($daemon_uid))[0,3];
++      if (!defined($daemon_gid))
++      {
++        warn("Could not find group id for user id \'$daemon_uid\'\n");
++	undef $daemon_uid;
++      }
++    }
+ 
+     # Change current uid to new_uid
+     if (defined($daemon_uid))
+     {
+-      if ($daemon_uid_name ne '')
+-      {
+-        if ($syslog_system_enable == 1) {
+-          syslog_system("Changing to UID: $daemon_uid_name \($daemon_uid\)");
+-        }
+-        if ($log_system_enable == 1) {
+-          log_system("Changing to UID: $daemon_uid_name \($daemon_uid\)");
+-        }
+-
+-        if ($DEBUGGING >= 1)
+-        {
+-          print "Changing to UID: $daemon_uid_name \($daemon_uid\)\n";
+-        }
++      # Find all the groups the user is a member of
++      my @daemon_groups;
++      if (defined($daemon_uid_name)) {
++	      while (my ($name, $comment, $ggid, $mstr) = getgrent()) {
++		  my %membership = map { $_ => 1 } split(/\s/, $mstr);
++		  if(exists $membership{$daemon_uid_name}) {
++		      push(@daemon_groups, $ggid) if $ggid ne 0;
++		  }
++	      }
+       }
+-      else
+-      {
+-        if ($syslog_system_enable == 1) {
+-          syslog_system("Changing to UID: $daemon_uid");
+-        }
+-        if ($log_system_enable == 1) {
+-          log_system("Changing to UID: $daemon_uid");
+-        }
+-
+-        if ($DEBUGGING >= 1)
+-        {
+-          print "Changing to UID: $daemon_uid\n";
+-        }
++      my %groupHash = map { $_ => 1 } ($daemon_gid, @daemon_groups);
++      my $newgid ="$daemon_gid ".join(" ", sort { $a <=> $b } (keys %groupHash));
++ 
++      if ($syslog_system_enable == 1) {
++	syslog_system("Changing to UID: $daemon_uid_name \($daemon_uid\), GID: $newgid");
++      }
++      if ($log_system_enable == 1) {
++	log_system("Changing to UID: $daemon_uid_name \($daemon_uid\), GID: $newgid");
+       }
+ 
++      if ($DEBUGGING >= 1)
++      {
++	print "Changing to UID: $daemon_uid_name \($daemon_uid\) GIF: $newgid\n";
++      }
+ 
+       if ($DEBUGGING >= 1) {
+         print DEBUGFILE "Closing debug file $DEBUGGING_FILE\n";
+@@ -862,7 +865,16 @@
+       # Close debug file (if it is open) before changing users and re-open after
+       close(DEBUGFILE);
+ 
+-      $> = $daemon_uid;
++      ($() = split /\s/, $newgid;
++      $) = $newgid;
++      $> = $< = $daemon_uid;
++      
++      # repeat to drop saved uid/gid too
++      ($() = split /\s/, $newgid;
++      $) = $newgid;
++      $> = $< = $daemon_uid;
++
++      die "Could not drop privileges" if ($< eq 0 or $> eq 0 or $( eq 0 or $) eq 0);
+ 
+       $debug_file_open_error = 1;
+       # Re-open debug file (if needed) as the new user
