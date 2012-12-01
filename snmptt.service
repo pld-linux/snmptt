@@ -1,0 +1,11 @@
+[Unit]
+Description=SNMP Trap Translator
+Before=snmptrapd.service
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/snmptt --daemon
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

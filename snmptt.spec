@@ -12,8 +12,9 @@ Group:		Networking
 Source0:	http://dl.sourceforge.net/snmptt/%{name}_%{version}.tgz
 # Source0-md5:	ee8d8206d3e0d860fee126e09d8eb207
 Source1:	%{name}.init
+Source2:	%{name}.service
 URL:		http://www.snmptt.org/
-BuildRequires:	rpmbuild(macros) >= 1.268
+BuildRequires:	rpmbuild(macros) >= 1.644
 BuildRequires:	rpm-perlprov
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -51,6 +52,7 @@ Requires(pre):	/bin/id
 Requires(pre):	/usr/sbin/usermod
 Requires:	%{name} = %{version}-%{release}
 Requires:	rc-scripts
+Requires:	systemd-units >= 38
 
 %description init
 Init scripts for SNMPTT.
@@ -64,13 +66,15 @@ Skrypt init dla SNMPTT.
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sbindir},%{_sysconfdir}/snmp} \
-	$RPM_BUILD_ROOT{/etc/rc.d/init.d,/var/log,/var/spool/snmptt}
+	$RPM_BUILD_ROOT{/etc/rc.d/init.d,/var/log,/var/spool/snmptt} \
+	$RPM_BUILD_ROOT%{systemdunitdir}
 
 install snmptt $RPM_BUILD_ROOT%{_sbindir}
 install snmptthandler $RPM_BUILD_ROOT%{_sbindir}
 install snmptt.ini $RPM_BUILD_ROOT%{_sysconfdir}/snmp
 install examples/snmptt.conf.generic $RPM_BUILD_ROOT%{_sysconfdir}/snmp/snmptt.conf
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
+install %{SOURCE2} $RPM_BUILD_ROOT%{systemdunitdir}
 
 touch $RPM_BUILD_ROOT/var/log/{snmptt.{log,debug},snmpttunknown.log}
 
@@ -84,18 +88,21 @@ rm -rf $RPM_BUILD_ROOT
 %post init
 /sbin/chkconfig --add %{name}
 %service snmptt restart
+%systemd_post %{name}.service
 
 %preun init
 if [ "$1" = "0" ]; then
 	%service snmptt stop
 	/sbin/chkconfig --del snmptt
 fi
+%systemd_preun %{name}.service
 
 %postun init
 if [ "$1" = "0" ]; then
 	%userremove snmptt
 	%groupremove snmptt
 fi
+%systemd_reload
 
 %triggerin init -- nagios
 # so SNMPTT can be used to post nagios commands
@@ -114,4 +121,5 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_sbindir}/snmptthandler
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
+%{systemdunitdir}/%{name}.service
 %attr(771,root,snmptt) /var/spool/snmptt
