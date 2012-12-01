@@ -6,7 +6,7 @@ Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP
 Summary(pl.UTF-8):	Program do obsługi pułapek SNMP do używania z NET-SNMP/UCD-SNMP
 Name:		snmptt
 Version:	1.3
-Release:	1
+Release:	2
 License:	GPL v2
 Group:		Networking
 Source0:	http://dl.sourceforge.net/snmptt/%{name}_%{version}.tgz
@@ -35,7 +35,7 @@ zmiennych. Wyjściem może być STDOUT, plik loga tekstowego, syslog,
 Event Log NT, MySQL (Linux/Windows), PostgreSQL albo baza danych ODBC.
 Można także wywoływać zdefiniowane przez użytkownika programy.
 
-%package init
+%package daemon
 Summary:	An SNMP trap handler for use with NET-SNMP/UCD-SNMP - daemon script
 Summary(pl.UTF-8):	Program do obsługi pułapek SNMP do używania z NET-SNMP/UCD-SNMP - skrypt demona
 Group:		Networking/Daemons
@@ -54,12 +54,13 @@ Requires(pre):	/usr/sbin/usermod
 Requires:	%{name} = %{version}-%{release}
 Requires:	rc-scripts
 Requires:	systemd-units >= 38
+Obsoletes:	%{name}-init <= 1.3-1
 
-%description init
-Init scripts for SNMPTT.
+%description daemon
+Files and dependencies needed for running SNMPTT in daemon mode.
 
-%description init -l pl.UTF-8
-Skrypt init dla SNMPTT.
+%description daemon -l pl.UTF-8
+Pliki i zależności potrzebne do używania SNMPTT jako demona.
 
 %prep
 %setup -q -n %{name}_%{version}
@@ -85,30 +86,30 @@ touch $RPM_BUILD_ROOT/var/log/{snmptt.{log,debug},snmpttunknown.log}
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%pre init
+%pre daemon
 %groupadd -g 285 snmptt
 %useradd -u 285 -c 'SNMPTT' -g snmptt snmptt
 
-%post init
+%post daemon
 /sbin/chkconfig --add %{name}
 %service snmptt restart
 %systemd_post %{name}.service
 
-%preun init
+%preun daemon
 if [ "$1" = "0" ]; then
 	%service snmptt stop
 	/sbin/chkconfig --del snmptt
 fi
 %systemd_preun %{name}.service
 
-%postun init
+%postun daemon
 if [ "$1" = "0" ]; then
 	%userremove snmptt
 	%groupremove snmptt
 fi
 %systemd_reload
 
-%triggerin init -- nagios
+%triggerin daemon -- nagios
 # so SNMPTT can be used to post nagios commands
 %addusertogroup -q snmptt nagcmd
 
@@ -123,7 +124,7 @@ fi
 %config(noreplace) %verify(not md5 mtime size) /var/log/*.log
 %config(noreplace) %verify(not md5 mtime size) /var/log/*.debug
 
-%files init
+%files daemon
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_sbindir}/snmptthandler
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
