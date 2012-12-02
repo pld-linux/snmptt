@@ -6,6 +6,7 @@ Before=snmptrapd.service
 Type=forking
 ExecStart=/usr/sbin/snmptt --daemon
 ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
