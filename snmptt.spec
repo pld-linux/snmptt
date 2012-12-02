@@ -16,7 +16,7 @@ Source2:	%{name}.service
 Source3:	%{name}.logrotate
 Patch0:		%{name}-privileges.patch
 Patch1:		%{name}-unlink.patch
-Patch2:		%{name}-system.patch
+Patch2:		%{name}-exec.patch
 URL:		http://www.snmptt.org/
 BuildRequires:	rpmbuild(macros) >= 1.644
 BuildRequires:	rpm-perlprov
