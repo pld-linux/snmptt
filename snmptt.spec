@@ -16,6 +16,7 @@ Source2:	%{name}.service
 Source3:	%{name}.logrotate
 Patch0:		%{name}-privileges.patch
 Patch1:		%{name}-unlink.patch
+Patch2:		%{name}-system.patch
 URL:		http://www.snmptt.org/
 BuildRequires:	rpmbuild(macros) >= 1.644
 BuildRequires:	rpm-perlprov
@@ -67,6 +68,7 @@ Pliki i zależności potrzebne do używania SNMPTT jako demona.
 %setup -q -n %{name}_%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %install
 rm -rf $RPM_BUILD_ROOT

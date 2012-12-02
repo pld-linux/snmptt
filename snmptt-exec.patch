@@ -1,0 +1,21 @@
+diff -dur snmptt_1.3.orig/snmptt snmptt_1.3/snmptt
+--- snmptt_1.3.orig/snmptt	2012-12-02 16:05:28.000000000 +0100
++++ snmptt_1.3/snmptt	2012-12-02 16:07:58.065741192 +0100
+@@ -2074,6 +2074,8 @@
+                   {
+                     print "EXECing command in thread:$command\n";
+                   }
++		  $command =~ /^(.*)$/;
++		  $command = $1;
+                   system $command;
+                   $thread_exec_semaphore->up;
+                 }
+@@ -2084,6 +2086,8 @@
+                   $command =~ s/\*/\\\*/g;
+                   $command =~ s/\?/\\\?/g;
+                 }
++		$command =~ /^(.*)$/;
++		$command = $1;
+                 system $command;
+               }
+             }
